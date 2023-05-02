@@ -8,7 +8,7 @@ export class UserEntity extends BaseEntity(BaseAuditEntity()) {
   @Column()
   id: number;
 
-  @Column()
+  @Column({ length: 255 })
   name: string;
 
   @Column()

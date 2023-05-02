@@ -11,6 +11,7 @@ const EXPORT_PROVIDERS = [DbContext];
 @Module({
   imports: [
     DomainModule,
+    SharedModule,
     TypeOrmModule.forRootAsync({
       imports: [SharedModule],
       useFactory: (configService: ConfigService) => {
