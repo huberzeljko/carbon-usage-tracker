@@ -1,22 +1,19 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserEntity } from '@app/domain';
-import { DbContext } from '@app/persistence';
-import { ILike } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import {
   InvalidUserNameOrPasswordError,
   UserNameAlreadyExistsError,
 } from '../errors';
 import { JwtService } from './jwt.service';
 import { PasswordService } from '@app/shared/services';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AccountService {
   constructor(
-    private readonly dbContext: DbContext,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService,
   ) {}
@@ -47,7 +44,7 @@ export class AccountService {
     firstName?: string;
     lastName?: string;
   }) {
-    const nameExists = await this.dbContext.users.exist({
+    const nameExists = await this.userRepository.exist({
       where: { name: ILike(name) },
     });
 
@@ -55,14 +52,14 @@ export class AccountService {
       throw new UserNameAlreadyExistsError();
     }
 
-    const user = this.dbContext.users.create({
+    const user = this.userRepository.create({
       name,
       firstName,
       lastName,
       password: await this.passwordService.hashPassword(password),
     });
 
-    await this.dbContext.users.save(user);
+    await this.userRepository.save(user);
 
     return {
       user: {
@@ -75,7 +72,7 @@ export class AccountService {
   }
 
   async getUserById(id: number) {
-    const user = await this.dbContext.users.findOne({
+    const user = await this.userRepository.findOne({
       where: { id: id },
     });
 
@@ -100,7 +97,7 @@ export class AccountService {
     name: string;
     password: string;
   }): Promise<UserEntity> {
-    const user = await this.dbContext.users.findOne({
+    const user = await this.userRepository.findOne({
       where: { name: ILike(name) },
     });
 

@@ -39,7 +39,7 @@ export class JwtService {
 
     return {
       secret: secret,
-      expiresIn: durationInMinutes,
+      expiresIn: durationInMinutes * 60,
       issuer: issuer,
       audience: audience,
     };

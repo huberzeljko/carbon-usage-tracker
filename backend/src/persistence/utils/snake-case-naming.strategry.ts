@@ -36,10 +36,10 @@ export class SnakeCaseNamingStrategy
   ): string {
     return snakeCase(
       firstTableName +
-      '_' +
-      firstPropertyName.replace(/\./gi, '_') +
-      '_' +
-      secondTableName,
+        '_' +
+        firstPropertyName.replace(/\./gi, '_') +
+        '_' +
+        secondTableName,
     );
   }
 

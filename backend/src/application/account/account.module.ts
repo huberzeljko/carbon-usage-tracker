@@ -4,11 +4,12 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './guards';
 import { SharedModule } from '@app/shared';
 import { PersistenceModule } from '@app/persistence';
+import { DomainModule } from '@app/domain';
 
 const EXPORT_PROVIDERS = [JwtService, AccountService];
 
 @Module({
-  imports: [SharedModule, PersistenceModule],
+  imports: [SharedModule, PersistenceModule, DomainModule],
   providers: [
     ...EXPORT_PROVIDERS,
     {

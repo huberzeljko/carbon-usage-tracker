@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DbContext } from './services/';
 import { SharedModule } from '@app/shared';
 import { ConfigService } from '@app/shared/config';
 import { DomainModule } from '@app/domain';
 import { UserSeedService } from './seeds';
-
-const EXPORT_PROVIDERS = [DbContext];
+import { SnakeCaseNamingStrategy } from '@app/persistence/utils';
 
 @Module({
   imports: [
@@ -26,12 +24,14 @@ const EXPORT_PROVIDERS = [DbContext];
           //migrationsRun: true,
           synchronize: true,
           autoLoadEntities: true,
+          namingStrategy: new SnakeCaseNamingStrategy(),
+          logging: 'all',
         };
       },
       inject: [ConfigService],
     }),
   ],
-  providers: [...EXPORT_PROVIDERS, UserSeedService],
-  exports: [...EXPORT_PROVIDERS],
+  providers: [UserSeedService],
+  exports: [],
 })
 export class PersistenceModule {}

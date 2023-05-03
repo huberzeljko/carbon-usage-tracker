@@ -1,9 +1,18 @@
 import { Module } from '@nestjs/common';
-import { AccountController } from './controllers';
+import {
+  AccountController,
+  CarbonUsageController,
+  CarbonUsageTypeController,
+} from './controllers';
 import { AccountModule } from '@app/application/account';
+import { CarbonUsageModule } from '@app/application/carbon-usage';
 
 @Module({
-  imports: [AccountModule],
-  controllers: [AccountController],
+  imports: [AccountModule, CarbonUsageModule],
+  controllers: [
+    AccountController,
+    CarbonUsageController,
+    CarbonUsageTypeController,
+  ],
 })
 export class ApiModule {}
