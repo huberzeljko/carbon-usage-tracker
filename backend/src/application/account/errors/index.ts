@@ -6,6 +6,12 @@ export class InvalidUserNameOrPasswordError extends BadRequestException {
   }
 }
 
+export class InvalidRefreshTokenError extends BadRequestException {
+  constructor() {
+    super('account/auth/invalid-refresh-token');
+  }
+}
+
 export class UserNameAlreadyExistsError extends ConflictException {
   constructor() {
     super('account/auth/username-already-exists');

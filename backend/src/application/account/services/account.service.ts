@@ -2,12 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserEntity } from '@app/domain';
 import { ILike, Repository } from 'typeorm';
 import {
+  InvalidRefreshTokenError,
   InvalidUserNameOrPasswordError,
   UserNameAlreadyExistsError,
 } from '../errors';
 import { JwtService } from './jwt.service';
 import { PasswordService } from '@app/shared/services';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RefreshTokenService } from './refresh-token.service';
+import { TokenResponseDto } from '@app/application/account/dtos/token-response.dto';
+import { LoginDto, RegisterDto } from '@app/application/account';
 
 @Injectable()
 export class AccountService {
@@ -16,20 +20,24 @@ export class AccountService {
     private readonly userRepository: Repository<UserEntity>,
     private readonly passwordService: PasswordService,
     private readonly jwtService: JwtService,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
-  async login(data: { name: string; password: string }) {
+  async login(
+    data: LoginDto & {
+      remoteIpAddress: string;
+    },
+  ): Promise<TokenResponseDto> {
     const user = await this.validateUser(data);
-    const access_token = this.generateAccessToken(user);
+
+    const tokens = await this.getTokens({
+      user,
+      remoteIpAddress: data.remoteIpAddress,
+    });
 
     return {
-      accessToken: access_token,
-      user: {
-        id: user.id,
-        name: user.name,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
     };
   }
 
@@ -38,12 +46,10 @@ export class AccountService {
     firstName,
     lastName,
     password,
-  }: {
-    name: string;
-    password: string;
-    firstName?: string;
-    lastName?: string;
-  }) {
+    remoteIpAddress,
+  }: RegisterDto & {
+    remoteIpAddress: string;
+  }): Promise<TokenResponseDto> {
     const nameExists = await this.userRepository.exist({
       where: { name: ILike(name) },
     });
@@ -61,14 +67,38 @@ export class AccountService {
 
     await this.userRepository.save(user);
 
-    return {
-      user: {
-        id: user.id,
-        name: user.name,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      },
-    };
+    return await this.getTokens({ user, remoteIpAddress });
+  }
+
+  async exchangeRefreshToken({
+    refreshToken,
+    remoteIpAddress,
+  }: {
+    refreshToken: string;
+    remoteIpAddress: string;
+  }): Promise<TokenResponseDto> {
+    const tokenEntity = await this.refreshTokenService.verifyRefreshToken(
+      refreshToken,
+    );
+
+    if (!tokenEntity) {
+      throw new InvalidRefreshTokenError();
+    }
+
+    const user = await this.userRepository.findOne({
+      where: { id: tokenEntity.userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.refreshTokenService.removeRefreshToken(tokenEntity);
+
+    return await this.getTokens({
+      user,
+      remoteIpAddress: remoteIpAddress,
+    });
   }
 
   async getUserById(id: number) {
@@ -123,5 +153,21 @@ export class AccountService {
     });
 
     return token;
+  }
+
+  private async getTokens({
+    user,
+    remoteIpAddress,
+  }: {
+    user: UserEntity;
+    remoteIpAddress?: string;
+  }): Promise<TokenResponseDto> {
+    const { clearTextRefreshToken } =
+      await this.refreshTokenService.addRefreshToken(user, remoteIpAddress);
+
+    return {
+      accessToken: this.generateAccessToken(user),
+      refreshToken: clearTextRefreshToken,
+    };
   }
 }

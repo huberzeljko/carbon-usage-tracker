@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import {
   AccountService,
+  ExchangeRefreshTokenDto,
   LoginDto,
-  LoginResponse,
   RegisterDto,
-  RegisterResponse,
+  TokenResponseDto,
   UserDto,
 } from '@app/application/account';
-import { CurrentUser, Public } from '@app/shared/decorators';
+import { CurrentUser, Public, RemoteIpAddress } from '@app/shared/decorators';
 import { JwtUser } from '@app/application/account/interfaces';
 import {
   ApiBadRequestResponse,
@@ -15,6 +15,7 @@ import {
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -37,30 +38,56 @@ export class AccountController {
   @Public()
   @Post('login')
   @ApiCreatedResponse({
-    type: LoginResponse,
+    type: TokenResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiBody({
     type: LoginDto,
   })
-  login(@Body() request: LoginDto): Promise<LoginResponse> {
+  login(
+    @Body() request: LoginDto,
+    @RemoteIpAddress() remoteIpAddress: string,
+  ): Promise<TokenResponseDto> {
     return this.accountService.login({
-      name: request.userName,
-      password: request.password,
+      ...request,
+      remoteIpAddress,
+    });
+  }
+
+  @Public()
+  @Post('exchange-refresh-token')
+  @ApiCreatedResponse({
+    type: TokenResponseDto,
+  })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiNotFoundResponse({ description: 'User not found' })
+  @ApiBody({
+    type: ExchangeRefreshTokenDto,
+  })
+  exchangeRefreshToken(
+    @Body() request: ExchangeRefreshTokenDto,
+    @RemoteIpAddress() remoteIpAddress: string,
+  ): Promise<TokenResponseDto> {
+    return this.accountService.exchangeRefreshToken({
+      refreshToken: request.refreshToken,
+      remoteIpAddress: remoteIpAddress,
     });
   }
 
   @Public()
   @Post('register')
   @ApiCreatedResponse({
-    type: RegisterResponse,
+    type: TokenResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiConflictResponse({ description: 'Username already exists' })
   @ApiBody({
     type: RegisterDto,
   })
-  register(@Body() request: RegisterDto): Promise<RegisterResponse> {
-    return this.accountService.register(request);
+  register(
+    @Body() request: RegisterDto,
+    @RemoteIpAddress() remoteIpAddress: string,
+  ): Promise<TokenResponseDto> {
+    return this.accountService.register({ ...request, remoteIpAddress });
   }
 }

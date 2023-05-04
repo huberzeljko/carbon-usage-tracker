@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, Unique } from 'typeorm';
 import { BaseAuditEntity, BaseEntity } from './shared';
 import { UsageEntity } from './usage.entity';
+import { RefreshTokenEntity } from './refresh-token.entity';
 
 @Entity({ name: 'user' })
 @Unique(['name'])
@@ -22,4 +23,7 @@ export class UserEntity extends BaseEntity(BaseAuditEntity()) {
 
   @OneToMany(() => UsageEntity, (usage) => usage.user)
   usages: UsageEntity[];
+
+  @OneToMany(() => RefreshTokenEntity, (rt) => rt.user)
+  refreshTokens: RefreshTokenEntity[];
 }

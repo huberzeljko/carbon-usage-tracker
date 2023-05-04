@@ -23,5 +23,11 @@ export const configFactory = (): Config => ({
       issuer: process.env.SECURITY_JWT_ISSUER!,
       audience: process.env.SECURITY_JWT_AUDIENCE!,
     },
+    refreshToken: {
+      secret: process.env.SECURITY_REFRESH_TOKEN_SECRET!,
+      durationInMinutes: parseInt(
+        process.env.SECURITY_REFRESH_TOKEN_DURATION_IN_MINUTES!,
+      ),
+    },
   },
 });

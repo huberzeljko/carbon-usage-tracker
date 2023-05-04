@@ -25,8 +25,3 @@ export class RegisterDto {
   @ApiProperty({ required: false })
   lastName?: string;
 }
-
-export class RegisterResponse {
-  @ApiProperty()
-  user: UserDto;
-}

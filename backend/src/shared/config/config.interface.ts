@@ -15,5 +15,9 @@ export interface Config {
       issuer: string;
       audience: string;
     };
+    refreshToken: {
+      secret: string;
+      durationInMinutes: number;
+    };
   };
 }
