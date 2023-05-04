@@ -21,11 +21,9 @@ import { SnakeCaseNamingStrategy } from '@app/persistence/utils';
           username: dbConfig.username,
           password: dbConfig.password,
           database: dbConfig.databaseName,
-          //migrationsRun: true,
           synchronize: true,
           autoLoadEntities: true,
           namingStrategy: new SnakeCaseNamingStrategy(),
-          logging: 'all',
         };
       },
       inject: [ConfigService],

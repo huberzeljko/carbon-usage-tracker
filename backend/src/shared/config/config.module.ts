@@ -7,7 +7,7 @@ import { ConfigService } from './config.service';
   imports: [
     BaseConfigModule.forRoot({
       load: [configFactory],
-      envFilePath: '.env',
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
     }),
   ],
   providers: [ConfigService],

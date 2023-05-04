@@ -50,6 +50,21 @@ The API documentation is available through Swagger OpenAPI. You can access it at
 
 The application will now be running at http://localhost:3000.
 
+## Testing
+
+There are few unit test and E2E tests in application. E2E tests database is created using docker so there's no need to handle this manually.
+
+1. Run tests:
+
+   ```
+   yarn test
+   ```
+   
+2. Run E2E tests
+
+   ```
+   yarn test:e2e
+   ```
 ## Technical Details
 
 The development of the Carbon Usage Tracker application took approximately two full working days. Application structure is similar to clean architecture which consists of `api`, `application`, `domain`, `persistence` and `shared` layers. ORM used for database access is [TypeORM](https://typeorm.io). 

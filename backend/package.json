@@ -22,7 +22,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "yarn test:database:start && jest --config ./test/jest-e2e.json --silent=false --runInBand --bail; yarn test:database:stop",
+    "test:database:start": "yarn test:database:stop && docker-compose -f ./test/docker-compose.e2e.yml --env-file .env.test up -d --renew-anon-volumes",
+    "test:database:stop": "docker-compose -f ./test/docker-compose.e2e.yml --env-file .env.test down --volumes"
   },
   "dependencies": {
     "@js-joda/core": "^5.5.3",
@@ -82,6 +84,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@app/(.*)$": "<rootDir>/$1"
+    }
   }
 }

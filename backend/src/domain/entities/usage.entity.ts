@@ -15,11 +15,11 @@ export class UsageEntity extends BaseEntity(BaseAuditEntity()) {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  user: UserEntity;
+  user?: UserEntity;
 
   @ManyToOne(() => UsageTypeEntity, (usageType) => usageType.usages, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'usage_type_id' })
-  usageType: UsageTypeEntity;
+  usageType?: UsageTypeEntity;
 }

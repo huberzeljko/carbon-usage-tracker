@@ -122,9 +122,9 @@ function map(entity: UsageEntity): CarbonUsageDto {
     userId: entity.userId,
     amount: entity.amount,
     type: {
-      id: entity.usageType.id,
-      name: entity.usageType.name,
-      unit: entity.usageType.unit,
+      id: entity.usageType!.id,
+      name: entity.usageType!.name,
+      unit: entity.usageType!.unit,
     },
   };
 }
