@@ -1,6 +1,7 @@
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional } from 'class-validator';
 import { PagingFilterDto } from '@app/shared';
 import { Instant } from '@js-joda/core';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CarbonUsageFilterDto extends PagingFilterDto {
   @IsNotEmpty()
@@ -9,5 +10,17 @@ export class CarbonUsageFilterDto extends PagingFilterDto {
 
   @IsNotEmpty()
   @IsOptional()
+  @ApiProperty()
   to?: Instant;
+
+  @IsNotEmpty()
+  @IsOptional()
+  @IsIn(['amount', 'type', 'createdAt'])
+  @ApiProperty()
+  sortField?: string;
+
+  @IsOptional()
+  @IsIn(['ASC', 'DESC'])
+  @ApiProperty()
+  sortDirection?: 'ASC' | 'DESC';
 }

@@ -89,6 +89,8 @@ export class CarbonUsageService {
     userId,
     from,
     to,
+    sortField,
+    sortDirection,
     ...pagingFilter
   }: CarbonUsageFilterDto & { userId: number }): Promise<
     IPaginated<CarbonUsageDto>
@@ -114,6 +116,28 @@ export class CarbonUsageService {
       });
     }
 
+    if (sortField) {
+      const direction = sortDirection || 'ASC';
+      console.log(sortField);
+      switch (sortField) {
+        case 'amount':
+          queryBuilder = queryBuilder.orderBy({
+            [`usage.amount`]: direction,
+          });
+          break;
+        case 'createdAt':
+          queryBuilder = queryBuilder.orderBy({
+            [`usage.createdAt`]: direction,
+          });
+          break;
+        case 'type':
+          queryBuilder = queryBuilder.orderBy({
+            [`usageType.name`]: direction,
+          });
+          break;
+      }
+    }
+
     const { items, pagingInfo } = await paginate(pagingFilter, queryBuilder);
     return {
       items: items.map(map),
@@ -121,6 +145,26 @@ export class CarbonUsageService {
     };
   }
 }
+
+const SORT_FIELDS = ['createdAt', 'amount', 'type'] as const;
+type SortFieldType = typeof SORT_FIELDS;
+
+function parseSort(
+  sort?: string,
+): { field: SortFieldType; direction: SortDirection } | null {
+  if (!sort || sort === '') return null;
+
+  const parts = sort.split('|');
+  const field = parts?.[0] as any;
+  if (SORT_FIELDS.indexOf(field) !== -1) {
+    const direction = (parts?.[1] || 'DESC').toUpperCase() as SortDirection;
+    return field && field !== '' ? { field, direction } : null;
+  }
+
+  return null;
+}
+
+type SortDirection = 'ASC' | 'DESC';
 
 function map(entity: UsageEntity): CarbonUsageDto {
   return {

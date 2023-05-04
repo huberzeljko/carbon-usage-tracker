@@ -28,6 +28,7 @@ import {
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginatedDto } from '@app/shared';
@@ -53,6 +54,42 @@ export class CarbonUsageController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiPaginatedResponse(CarbonUsageDto)
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    required: true,
+    description: 'Page number',
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    type: Number,
+    required: true,
+    description: 'Page size',
+  })
+  @ApiQuery({
+    name: 'from',
+    type: Date,
+    required: false,
+    description: 'From date',
+  })
+  @ApiQuery({
+    name: 'to',
+    type: Date,
+    required: false,
+    description: 'To date',
+  })
+  @ApiQuery({
+    name: 'sortField',
+    type: String,
+    required: false,
+    description: 'Sort field: "amount", "createdAt" or "type"',
+  })
+  @ApiQuery({
+    name: 'sortDirection',
+    type: String,
+    required: false,
+    description: 'Sort direction: "ASC" or "DESC"',
+  })
   getMany(@Query() filter: CarbonUsageFilterDto, @CurrentUser() user: JwtUser) {
     return this.usageService.getManyCarbonUsages({
       ...filter,
