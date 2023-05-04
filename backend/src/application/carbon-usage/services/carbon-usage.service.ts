@@ -29,7 +29,13 @@ export class CarbonUsageService {
       amount,
     });
 
-    return map(await this.usageRepository.save(usage));
+    await this.usageRepository.save(usage);
+    return map(
+      (await this.usageRepository.findOne({
+        where: { id: usage.id },
+        relations: ['usageType'],
+      }))!,
+    );
   }
 
   async updateCarbonUsage(
