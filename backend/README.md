@@ -1,73 +1,62 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Carbon Usage Tracker
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The Carbon Usage Tracker is a web application designed to store and manage carbon usage data for customers. The application features a NestJS backend and uses a PostgreSQL database for storing data. It has three main entities: User, Usage, and Usage_Type.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Table of Contents
 
-## Description
+- [Features](#features)
+- [API Documentation](#api-documentation)
+- [Installation](#installation)
+- [Technical Details](#technical-details)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Features
+
+- Secure user authentication with JWT (JSON Web Tokens)
+- Refresh token ability for longer user authentication duration
+- CRUD operations for managing ```user```, ```usage```, and ```usage_type``` entities
+- Swagger OpenAPI documentation for easy API usage
+
+## API Documentation
+
+The API documentation is available through Swagger OpenAPI. You can access it at the following links:
+
+- Swagger UI: http://localhost:3000/api
+- JSON: http://localhost:3000/api-json
 
 ## Installation
 
-```bash
-$ yarn install
-```
+1. Clone the repository:
 
-## Running the app
+   ```
+   git clone https://github.com/huberzeljko/coding-challenge.git
+   ```
 
-```bash
-# development
-$ yarn run start
+2. Change to the project directory:
 
-# watch mode
-$ yarn run start:dev
+   ```
+   cd coding-challenge
+   ```
 
-# production mode
-$ yarn run start:prod
-```
+3. Set up environment variables:
 
-## Test
+   Create a `.env` file in the project root directory and add the necessary variables (see `.env.example`)
 
-```bash
-# unit tests
-$ yarn run test
 
-# e2e tests
-$ yarn run test:e2e
+4. Starting application using [Docker](https://www.docker.com/)
 
-# test coverage
-$ yarn run test:cov
-```
+   ```
+   docker compose up
+   ```
 
-## Support
+The application will now be running at http://localhost:3000.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Technical Details
 
-## Stay in touch
+The development of the Carbon Usage Tracker application took approximately two full working days. Application structure is similar to clean architecture which consists of `api`, `application`, `domain`, `persistence` and `shared` layers. ORM used for database access is [TypeORM](https://typeorm.io). 
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Authentication is implemented using JWT Bearer authentication, while the app also supports longer refresh tokens which enable users to generate new access tokens. Main reason for this is improved security so that if short-lived access token gets stolen, they can be used only for a limited time, while longer lived refresh token are only sent over the network once when getting new access token and are stores more securely. This also gives us ability to revoke user sessions if needed (e.g. when password is changed, system logs out all active sessions by clearing all refresh tokens from database).
 
-## License
-
-Nest is [MIT licensed](LICENSE).
+Possible improvements:
+1. If the application starts getting bigger and bigger, it'd be nice to migrate to microservices infrastructure. [NestJS](https://docs.nestjs.com/microservices/basics) has a nice migration guide and setup for microservice architecture
+2. Improve code coverage to 100%
+3. Add CI/CD pipepline for deployments
