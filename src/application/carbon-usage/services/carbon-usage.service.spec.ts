@@ -4,7 +4,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UsageEntity } from '@app/domain';
 import { Repository } from 'typeorm';
 import { Instant } from '@js-joda/core';
-import { NotFoundException } from '@nestjs/common';
 
 export type MockType<T> = {
   [P in keyof T]?: jest.Mock<{}>;
@@ -54,6 +53,7 @@ describe('CarbonUsageService', () => {
         createdAt: now,
         updatedAt: now,
       },
+      usageAt: now,
       createdAt: now,
       updatedAt: now,
     };
@@ -63,6 +63,7 @@ describe('CarbonUsageService', () => {
       id: usage.id,
       userId: usage.userId,
       amount: usage.amount,
+      usageAt: now,
       type: {
         id: usage.usageType!.id,
         name: usage.usageType!.name,
