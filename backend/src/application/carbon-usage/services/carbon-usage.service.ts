@@ -22,11 +22,13 @@ export class CarbonUsageService {
     userId,
     typeId,
     amount,
+    usageAt,
   }: CreateCarbonUsageDto & { userId: number }): Promise<CarbonUsageDto> {
     const usage = this.usageRepository.create({
       userId: userId,
       usageType: { id: typeId },
       amount,
+      usageAt,
     });
 
     await this.usageRepository.save(usage);
@@ -40,11 +42,17 @@ export class CarbonUsageService {
 
   async updateCarbonUsage(
     id: number,
-    { typeId, amount, userId }: UpdateCarbonUsageDto & { userId: number },
+    {
+      typeId,
+      amount,
+      userId,
+      usageAt,
+    }: UpdateCarbonUsageDto & { userId: number },
   ) {
     const updateResult = await this.usageRepository.update(
       { id, userId },
       {
+        usageAt,
         usageType: { id: typeId },
         amount,
       },
@@ -102,7 +110,7 @@ export class CarbonUsageService {
 
     if (from) {
       queryBuilder = queryBuilder.andWhere({
-        createdAt: Raw((alias) => `${alias} >= :from`, {
+        usageAt: Raw((alias) => `${alias} >= :from`, {
           from: from,
         }),
       });
@@ -110,7 +118,7 @@ export class CarbonUsageService {
 
     if (to) {
       queryBuilder = queryBuilder.andWhere({
-        createdAt: Raw((alias) => `${alias} <= :to`, {
+        usageAt: Raw((alias) => `${alias} <= :to`, {
           to: to,
         }),
       });
@@ -125,9 +133,9 @@ export class CarbonUsageService {
             [`usage.amount`]: direction,
           });
           break;
-        case 'createdAt':
+        case 'usageAt':
           queryBuilder = queryBuilder.orderBy({
-            [`usage.createdAt`]: direction,
+            [`usage.usageAt`]: direction,
           });
           break;
         case 'type':
@@ -146,26 +154,6 @@ export class CarbonUsageService {
   }
 }
 
-const SORT_FIELDS = ['createdAt', 'amount', 'type'] as const;
-type SortFieldType = typeof SORT_FIELDS;
-
-function parseSort(
-  sort?: string,
-): { field: SortFieldType; direction: SortDirection } | null {
-  if (!sort || sort === '') return null;
-
-  const parts = sort.split('|');
-  const field = parts?.[0] as any;
-  if (SORT_FIELDS.indexOf(field) !== -1) {
-    const direction = (parts?.[1] || 'DESC').toUpperCase() as SortDirection;
-    return field && field !== '' ? { field, direction } : null;
-  }
-
-  return null;
-}
-
-type SortDirection = 'ASC' | 'DESC';
-
 function map(entity: UsageEntity): CarbonUsageDto {
   return {
     id: entity.id,
@@ -176,5 +164,6 @@ function map(entity: UsageEntity): CarbonUsageDto {
       name: entity.usageType!.name,
       unit: entity.usageType!.unit,
     },
+    usageAt: entity.usageAt,
   };
 }

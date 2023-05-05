@@ -82,7 +82,7 @@ export class CarbonUsageController {
     name: 'sortField',
     type: String,
     required: false,
-    description: 'Sort field: "amount", "createdAt" or "type"',
+    description: 'Sort field: "amount", "usageAt" or "type"',
   })
   @ApiQuery({
     name: 'sortDirection',

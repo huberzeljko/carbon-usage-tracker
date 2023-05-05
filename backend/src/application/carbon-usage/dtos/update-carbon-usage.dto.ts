@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Instant } from '@js-joda/core';
 
 export class UpdateCarbonUsageDto {
   @IsNumber()
@@ -11,4 +12,9 @@ export class UpdateCarbonUsageDto {
   @IsNotEmpty()
   @ApiProperty()
   amount: number;
+
+  @IsDateString()
+  @IsNotEmpty()
+  @ApiProperty({ type: Date })
+  usageAt: Instant;
 }
