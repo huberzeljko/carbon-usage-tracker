@@ -28,13 +28,13 @@ The API documentation is available through Swagger OpenAPI. You can access it at
 1. Clone the repository:
 
    ```
-   git clone https://github.com/huberzeljko/coding-challenge.git
+   git clone https://github.com/huberzeljko/carbon-usage-tracker.git
    ```
 
 2. Change to the project directory:
 
    ```
-   cd coding-challenge
+   cd carbon-usage-tracker
    ```
 
 3. Set up environment variables:
@@ -52,7 +52,7 @@ The application will now be running at http://localhost:3000.
 
 ## Testing
 
-There are few unit test and E2E tests in application. E2E tests database is created using docker so there's no need to handle this manually.
+There are few unit test and E2E tests in application.
 
 1. Run tests:
 
@@ -60,7 +60,7 @@ There are few unit test and E2E tests in application. E2E tests database is crea
    yarn test
    ```
    
-2. Run E2E tests
+2. Run E2E tests ([Docker](https://www.docker.com/) is required for database setup)
 
    ```
    yarn test:e2e
