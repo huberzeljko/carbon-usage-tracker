@@ -54,13 +54,18 @@ The application will now be running at http://localhost:3000.
 
 There are few unit test and E2E tests in application.
 
-1. Run tests:
+1. Install dependencies (tests are not ran through docker)
+   ```
+   yarn install
+   ```
+
+2. Run tests:
 
    ```
    yarn test
    ```
    
-2. Run E2E tests ([Docker](https://www.docker.com/) is required for database setup)
+3. Run E2E tests ([Docker](https://www.docker.com/) is required for database setup)
 
    ```
    yarn test:e2e
