@@ -70,10 +70,52 @@ describe('Carbon Usage (e2e)', () => {
       .send({
         typeId: 1,
         amount: 5,
+        usageAt: '2023-05-06T12:03:39.568Z',
       })
       .expect(201);
 
-    expect(response.body.type.id).toBe(1);
+    expect(response.body.type.id).toBe('1');
     expect(response.body.amount).toBe(5);
+  });
+
+  it('/ (GET) - date filter success', async () => {
+    await insertTestUsageType();
+
+    const dates = [
+      '2023-05-03T12:03:39.568Z',
+      '2023-05-04T12:03:39.568Z',
+      '2023-05-04T15:03:39.568Z',
+      '2023-05-04T18:03:39.568Z',
+      '2023-05-05T12:03:39.568Z',
+    ];
+
+    for (const date of dates) {
+      await request(app.getHttpServer())
+        .post('/carbon-usage')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({
+          typeId: 1,
+          amount: 5,
+          usageAt: date,
+        })
+        .expect(201);
+    }
+
+    const response = await request(app.getHttpServer())
+      .get('/carbon-usage')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .query({
+        page: 1,
+        pageSize: 10,
+        from: '2023-05-04T00:03:39.568Z',
+        to: '2023-05-04T23:03:39.568Z',
+      })
+      .expect(200);
+
+    expect(response.body.items.map((item) => item.usageAt)).toEqual([
+      '2023-05-04T12:03:39.568Z',
+      '2023-05-04T15:03:39.568Z',
+      '2023-05-04T18:03:39.568Z',
+    ]);
   });
 });

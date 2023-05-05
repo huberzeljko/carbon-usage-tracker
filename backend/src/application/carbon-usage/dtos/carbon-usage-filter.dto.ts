@@ -15,7 +15,7 @@ export class CarbonUsageFilterDto extends PagingFilterDto {
 
   @IsNotEmpty()
   @IsOptional()
-  @IsIn(['amount', 'type', 'createdAt'])
+  @IsIn(['amount', 'type', 'usageAt'])
   @ApiProperty()
   sortField?: string;
 

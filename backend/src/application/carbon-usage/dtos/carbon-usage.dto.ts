@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CarbonUsageTypeDto } from './carbon-usage-type.dto';
+import { Instant } from '@js-joda/core';
 
 export class CarbonUsageDto {
   @ApiProperty()
@@ -13,4 +14,7 @@ export class CarbonUsageDto {
 
   @ApiProperty()
   amount: number;
+
+  @ApiProperty({ type: Date })
+  usageAt: Instant;
 }
