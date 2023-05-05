@@ -126,7 +126,6 @@ export class CarbonUsageService {
 
     if (sortField) {
       const direction = sortDirection || 'ASC';
-      console.log(sortField);
       switch (sortField) {
         case 'amount':
           queryBuilder = queryBuilder.orderBy({
